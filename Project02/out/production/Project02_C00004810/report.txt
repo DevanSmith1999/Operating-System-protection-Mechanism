@@ -1,0 +1,47 @@
+T1 Is there any chance of deadlock in this simulation? What changes could cause deadlocks?
+
+No. In this simulation, each thread (user) is requesting at most one resource at a time. Hence, there is no hold and
+wait. To modify this simulation so that it can “achieve” deadlock, we would need to do two things: (1) Allow users
+to request more than one resource at a time and (2) allow them to acquire all resources before performing their
+actions. In this alternate scenario, there would still be no preemption and, in the case of write requests, there would
+also be mutual exclusion. Consider the case where thread 1 and thread 2 make write requests on file 3 and file 4,
+but in reverse order to one another. If they both have write privileges on these files, then they could each hold onto
+one resource while waiting on the other. This would cause the circular wait.
+
+
+T2 How does this task compare with Task 1? Which is easier to implement?
+
+Both Task 1 and the current task involve similar processes for creating data structures, but the main difference lies
+in handling null cases and permissions. While the threading and resource handling are managed by a single class for
+both tasks, Task 1 is easier to implement as it only requires a multi-dimensional array, whereas the current task
+demands a more complex data structure, an ArrayList of hash maps. However, Task 1 has a higher space requirement as it
+needs to add a domain with no permissions to the data structure, whereas the current task detects and excludes it from
+the corresponding hash map.
+
+
+
+T3 What disadvantages do capability lists introduce given a more domain-based approach?
+
+
+
+
+T5 What is the importance of protection in a multi-user system? What could happen if all users were granted
+equal permission?
+
+
+
+
+**Implementation, Bugs and Fixes, Data Structures, Algorithms**
+The Main class implements the command line interface and performs the designated task by instantiating the necessary
+number of User instances and the appropriate subclass of AccessControlStructure. Then, it creates and starts a new
+Thread for each User instance.
+The concrete subclasses of the abstract AccessControlStructure class perform the random generation of the number of
+domains, the number of file resources, and the access privileges. They then create their own internal data structure
+for storing this data. They instantiate the appropriate number of Resource instances and have methods to handle User
+requests. There are three subclasses: AcessMatrix (Task 1), AccessList (Task 2), and CapabilityList (Task 3).
+The User class implements the Runnable interface and represents a single user thread. It randomly makes five requests
+and fulfills them if they are granted by the AccessControlStructure. It stores its domain assignment as an integer field and
+changes it only in the case of a granted domain change request.
+The Resource class represents a single file resource. It has a buffer field which stores a long value and two Semaphore
+objects to control access to the buffer. The User classes perform the synchronization, which allows an arbitrary number
+of readers to read concurrently, but only allows writers exclusive, individual access to the buffer.
